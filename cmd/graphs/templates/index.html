@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>{{ .title }}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script async src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+        <!-- меню -->
+    <script type="application/javascript" src="../assets/js/input.js"></script>         <!-- обработка клавиатуры -->
+
+    <script type="application/javascript" src="../assets/js/draw.js"></script>         <!-- функции рисования  -->     <!-- математические функции -->
+
+    <script type="application/javascript" src="../assets/js/graph.js"></script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2.3.0/dist/socket.io.slim.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+</head>
+
+<body class="container">
+{{ template "menu.html" . }}
+
+
+<script>
+    var socket = io();
+    socket.emit('msg', 'hello');
+</script>
+
+</body>
+<div id="container">
+    <div id="content">
+        <!--------------------------------------------------------------------------------------->
+        <b class="blue2" id="posID"></b><br>
+        <canvas id="canvas" width="950px" height="500px" ></canvas>
+        <br>
+        <textarea id="txt_nodes" rows="15" cols="112"></textarea>
+        <br>
+        <hr>
+    </div>
+</div>
+
+
+
+
+<script>
+    var canvas = document.getElementById('canvas');
+    canvas.addEventListener("mousedown", mouseDn, false);
+    canvas.addEventListener("mouseup",   mouseUp, false);
+    canvas.addEventListener("mousemove", mouseMv, false);
+    //setInterval(timer, 10); // вызываем через 10ms
+
+    //-----------------------------------------------------------------------------
+    var draw  = new Draw('canvas');
+    var graph = new Graph();
+    //graph.nodes = [{nm:0,go:[1,2],d:0,s:"0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15",y:170.5,x:369},{nm:1,go:[0,3,4],d:1,s:"1,0,2,3,4,5,6,7,8,9,10,11,12,13,14,15",x:478,y:170.5},{nm:1,go:[0,5,6],d:1,s:"4,1,2,3,0,5,6,7,8,9,10,11,12,13,14,15",x:260,y:170.5},{nm:2,go:[1,7,8],d:2,s:"1,2,0,3,4,5,6,7,8,9,10,11,12,13,14,15",x:549,y:99.5},{nm:2,go:[1,9,10,11],d:2,s:"1,5,2,3,4,0,6,7,8,9,10,11,12,13,14,15",x:549,y:241.5},{nm:2,go:[2,12,13,14],d:2,s:"4,1,2,3,5,0,6,7,8,9,10,11,12,13,14,15",x:190.5,y:241},{nm:2,go:[2,15,16],d:2,s:"4,1,2,3,8,5,6,7,0,9,10,11,12,13,14,15",x:189,y:99.5},{nm:3,go:[3,17],d:3,s:"1,2,3,0,4,5,6,7,8,9,10,11,12,13,14,15",x:550.5,y:11},{nm:3,go:[3,18,19,20],d:3,s:"1,2,6,3,4,5,0,7,8,9,10,11,12,13,14,15",x:639,y:100.5},{nm:3,go:[4,21,22,23],d:3,s:"1,5,2,3,4,6,0,7,8,9,10,11,12,13,14,15",x:641,y:241.5},{nm:3,go:[4,24,25],d:3,s:"1,5,2,3,0,4,6,7,8,9,10,11,12,13,14,15",x:614,y:306.5},{nm:3,go:[4,26,27,28],d:3,s:"1,5,2,3,4,9,6,7,8,0,10,11,12,13,14,15",x:460,y:300},{nm:3,go:[5,29,30,31],d:3,s:"4,1,2,3,5,6,0,7,8,9,10,11,12,13,14,15",x:240,y:300},{nm:3,go:[5,32,33,34],d:3,s:"4,1,2,3,5,9,6,7,8,0,10,11,12,13,14,15",x:124,y:306.5},{nm:3,go:[5,35,36],d:3,s:"4,0,2,3,5,1,6,7,8,9,10,11,12,13,14,15",x:97,y:241.5},{nm:3,go:[6,37,38,39],d:3,s:"4,1,2,3,8,5,6,7,9,0,10,11,12,13,14,15",x:99,y:100.5},{nm:3,go:[6,40],d:3,s:"4,1,2,3,8,5,6,7,12,9,10,11,0,13,14,15",x:190.5,y:11},{nm:4,go:[7],d:4,s:"1,2,3,7,4,5,6,0,8,9,10,11,12,13,14,15",x:430.5,y:11},{nm:4,go:[8],d:4,s:"1,2,6,3,4,5,7,0,8,9,10,11,12,13,14,15",x:639,y:10.5},{nm:4,go:[8],d:4,s:"1,2,6,3,4,0,5,7,8,9,10,11,12,13,14,15",x:720.5,y:11},{nm:4,go:[8],d:4,s:"1,2,6,3,4,5,10,7,8,9,0,11,12,13,14,15",x:720,y:100},{nm:4,go:[9],d:4,s:"1,5,2,3,4,6,7,0,8,9,10,11,12,13,14,15",x:600.5,y:171},{nm:4,go:[9],d:4,s:"1,5,2,3,4,6,10,7,8,9,0,11,12,13,14,15",x:720.5,y:171},{nm:4,go:[9],d:4,s:"1,5,0,3,4,6,2,7,8,9,10,11,12,13,14,15",x:720.5,y:241},{nm:4,go:[10],d:4,s:"1,5,2,3,8,4,6,7,0,9,10,11,12,13,14,15",x:720.5,y:311},{nm:4,go:[10],d:4,s:"0,5,2,3,1,4,6,7,8,9,10,11,12,13,14,15",x:720.5,y:381},{nm:4,go:[11],d:4,s:"1,5,2,3,4,9,6,7,8,10,0,11,12,13,14,15",x:520,y:380},{nm:4,go:[11],d:4,s:"1,5,2,3,4,9,6,7,0,8,10,11,12,13,14,15",x:410,y:390},{nm:4,go:[11],d:4,s:"1,5,2,3,4,9,6,7,8,13,10,11,12,0,14,15",x:400,y:240},{nm:4,go:[12],d:4,s:"4,1,2,3,5,6,7,0,8,9,10,11,12,13,14,15",x:300,y:240},{nm:4,go:[12],d:4,s:"4,1,2,3,5,6,10,7,8,9,0,11,12,13,14,15",x:300,y:390},{nm:4,go:[12],d:4,s:"4,1,0,3,5,6,2,7,8,9,10,11,12,13,14,15",x:190,y:390},{nm:4,go:[13],d:4,s:"4,1,2,3,5,9,6,7,8,10,0,11,12,13,14,15",x:90,y:390},{nm:4,go:[13],d:4,s:"4,1,2,3,5,9,6,7,0,8,10,11,12,13,14,15",x:10.5,y:351},{nm:4,go:[13],d:4,s:"4,1,2,3,5,9,6,7,8,13,10,11,12,0,14,15",x:10.5,y:271},{nm:4,go:[14],d:4,s:"4,2,0,3,5,1,6,7,8,9,10,11,12,13,14,15",x:10.5,y:191},{nm:4,go:[14],d:4,s:"0,4,2,3,5,1,6,7,8,9,10,11,12,13,14,15",x:140.5,y:161},{nm:4,go:[15],d:4,s:"4,1,2,3,8,5,6,7,9,10,0,11,12,13,14,15",x:10.5,y:121},{nm:4,go:[15],d:4,s:"4,1,2,3,8,5,6,7,9,13,10,11,12,0,14,15",x:10.5,y:41},{nm:4,go:[15],d:4,s:"4,1,2,3,8,0,6,7,9,5,10,11,12,13,14,15",x:99,y:10.5},{nm:4,go:[16],d:4,s:"4,1,2,3,8,5,6,7,12,9,10,11,13,0,14,15",x:300.5,y:11}];
+    var nodeR = Graph.svg.w/2;
+    var gridW = 10;                                   // ширина ячейки сетки
+    var gridH = 10;
+
+    var nodeSel1 = -1;
+    var nodeSel2 = -1;
+    Graph.svg.colors = ['#FFA', '#F00', '#0F0'];
+    Graph.svg.sText = 10;
+    Graph.svg.chW   =  7;
+
+    init();
+
+    var mouseButtonDn = false;
+    var startOptimize = false;
+    var nodeSel;
+
+    /*******************************************************************************
+     * Выбор метода
+     */
+    /*******************************************************************************
+     * Создать граф
+     */
+    function create()
+    {
+        var params = JSON.parse({ "d":10 });
+        graph = new Graph();
+        gridW = gridH = params.d;
+        show();
+    }
+    /*******************************************************************************
+     * when mouse down
+     */
+    // function init()
+    // {
+    //     //graph.plotCanvas('canvas');
+    //
+    //     show();
+    // }
+    /*******************************************************************************
+     *  Нарисовать реадктор
+     */
+    function show()
+    {
+
+        draw.clear();
+        draw.colorFill('#FFF');
+        draw.colorLine('#eeeeee');
+        draw.box(draw.w/2,draw.h/2, draw.w, draw.h);
+        for(var i=0; i < draw.w/gridW; i++)
+            draw.line(i*gridW, 0, i*gridW, draw.h);
+        for(var j=0; j < draw.h/gridH; j++)
+            draw.line(0, j*gridH, draw.w, j*gridH);
+
+        graph.plotCanvas('canvas');
+        document.getElementById('txt_nodes').value = graph.getJSON();
+    }
+    /*******************************************************************************
+     *  show info about graph
+     */
+    /*******************************************************************************
+     * Получить координаты мыши
+     */
+    function getPos(event)
+    {
+        var rct = canvas.getBoundingClientRect();
+        return { x: event.clientX - rct.left,  y: event.clientY - rct.top };
+    }
+    /*******************************************************************************
+     * when mouse down
+     */
+    function mouseDn(event)
+    {
+        mouseButtonDn = true;
+    }
+    /*******************************************************************************
+     * when mouse up
+     */
+    function mouseUp(event)
+    {
+        mouseButtonDn = false;
+
+        var  p = getPos(event);
+        var n = graph.getNode(p.x, p.y, nodeR);
+
+        if(n >= 0){
+            if     (input.isDown('r') && n !== nodeSel1 && nodeSel1 >= 0 ){      // создаём ребро
+                graph.addRib(nodeSel1, n);
+            }
+            else if(input.isDown('a') && n !== nodeSel1 && nodeSel1 >= 0 ){      // создаём ребро
+                graph.addRib(nodeSel1, n);
+                graph.addRib(n, nodeSel1);
+            }
+            else if(input.isDown('c') && n !== nodeSel1 && nodeSel1 >= 0 ){      // создаём ребро
+                graph.delRib(nodeSel1, n);
+                graph.delRib(n, nodeSel1);
+            }
+            else if(input.isDown('d') && (n === nodeSel1 || n === nodeSel2) ){                       // удаляем узел
+                graph.delNode(n);
+                nodeSel1 = nodeSel2 = -1;
+            }
+            else{
+                if(nodeSel1 >= 0 && n !== nodeSel1 )     // была пометка
+                    graph.nodes[nodeSel1].chk = 0;
+                graph.set("chk", 0);
+                graph.nodes[n].chk = 1;                  // делаем новую пометку
+                nodeSel1 = n;
+                nodeSel2 = -1;
+            }
+        }
+        else{
+            if(nodeSel1 >= 0 ){                         // снимаем пометку
+                graph.nodes[nodeSel1].chk = 0;
+                nodeSel1 = -1;
+            }
+
+            if(nodeSel2 < 0){
+                p.x = Math.round(p.x/gridW)*gridW;       // добавляем узел
+                p.y = Math.round(p.y/gridH)*gridH;
+                graph.nodes.push({nm:graph.nodes.length, go:[], x:p.x, y:p.y});
+            }
+        }
+
+
+        show();
+    }
+    /*******************************************************************************
+     * when mouse move
+     */
+    function mouseMv(event)
+    {
+        var p = getPos(event);
+        var n = graph.getNode(p.x, p.y, nodeR);
+
+
+        if(mouseButtonDn && nodeSel2 >= 0){                                     // двигаем узел
+            graph.nodes[nodeSel2].x = Math.round(p.x/gridW)*gridW;
+            graph.nodes[nodeSel2].y = Math.round(p.y/gridH)*gridH;
+        }
+        else{
+
+            if(n >= 0 && n !== nodeSel1){                                          // делаем пометку
+                graph.nodes[n].chk = 2;
+                nodeSel2 = n;
+            }
+            if(n < 0 && nodeSel2 >=0  && nodeSel2 !== nodeSel1){
+                graph.nodes[nodeSel2].chk = 0;
+                nodeSel2 = -1;
+            }
+        }
+        var st = "";
+        if(nodeSel1>=0){
+            st =  JSON.stringify(graph.nodes[nodeSel1]);
+            st = ";  "+nodeSel1+":" + st.replace(/\"(\w+)\":/g, '$1:');
+        }
+        document.getElementById('posID').innerHTML = 'x:'+Math.round(p.x*10)/10+' y:'+Math.round(p.y*10)/10
+            + st;
+        ;//+' n='+n+' sel1='+nodeSel1+' sel2='+nodeSel2;
+
+        show();
+    }
+    /*******************************************************************************
+     *
+     */
+    // function timer()
+    // {
+    //     if(!startOptimize)
+    //         return;
+    //
+    //     graph.setGraphPos(canvas, nodeR);
+    //     var v = graph.value();
+    //
+    //     if(v > valueBest){       // restore the best
+    //         graph.clone(graphBest);
+    //     }
+    //     if(v <= valueBest){       // save the best
+    //         valueBest=v;
+    //         graphBest.clone(graph);
+    //     }
+    //
+    //     graph.plotCanvas('canvas');
+    //     showInfo();
+    // }
+    /*******************************************************************************
+     */
+    // function selectGraph(val)
+    // {
+    //     // var txt_nodes = document.getElementById('txt_nodes');
+    //     // init(val);
+    // }
+    /*******************************************************************************
+     */
+    // function getJSON()
+    // {
+    //     // var txt_nodes = document.getElementById('txt_nodes');
+    //     // txt_nodes.value = graph.getJSON();
+    //     //txt_nodes.value += "\n\n" + JSON.stringify(graph.nodes);
+    // }
+    /*******************************************************************************
+     */
+    // function getSVG()
+    // {
+    //     var txt_svg = document.getElementById('txt_svg');
+    //     txt_svg.value  =  graph.getSVG();
+    // }
+    /*******************************************************************************
+     */
+    // function set(obj)
+    // {
+    //     // var st = document.getElementById('txt_nodes').value;
+    //     // //st = st.replace(/\n/g,"");
+    //     // graph.nodes = JSON.parse(st);
+    //     //
+    //     //
+    //     // show();
+    // }
+    /*******************************************************************************
+     */
+    // function press(obj)
+    // {
+    //     // var minX=Infinity, minY=Infinity;
+    //     // for(var i=graph.nodes.length; i--; ){
+    //     //     var n = graph.nodes[i];
+    //     //     if(n.x < minX)
+    //     //         minX = n.x;
+    //     //     if(n.y < minY)
+    //     //         minY = n.y;
+    //     //     if(n.chk !== undefined)
+    //     //         delete n.chk;
+    //     // }
+    //     // for(var i=graph.nodes.length; i--; ){
+    //     //     var n = graph.nodes[i];
+    //     //     n.x = n.x - minX + nodeR;
+    //     //     n.y = n.y - minY + nodeR;
+    //     // }
+    //     //
+    //     // var st = graph.getJSON("true")
+    //     // if(document.getElementById('press_cr_id').checked)
+    //     //     st = st.replace(/\n/g, "");
+    //     // document.getElementById('txt_nodes').value = st;
+    //     // alert('hi');
+    // }
+    /*******************************************************************************
+     */
+    // function optimize(obj)
+    // {
+    //     startOptimize = !startOptimize;
+    //     obj.innerHTML = startOptimize?  "Stop": "Optimize";
+    // }
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+version: "2"
+services:
+  app:
+    restart: on-failure
+    build: ./
+    volumes:
+      - ./:/app
+    ports:
+      - "3000:3000"
+  redis:
+    restart: on-failure
+    image: redis:alpine
+
