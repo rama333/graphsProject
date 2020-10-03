@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/googollee/go-socket.io"
+	"graphsProject/cmd/graphs/apis"
+	"log"
 	"net/http"
 )
 
@@ -16,56 +17,25 @@ func main() {
 
 	router.GET("/", func(c *gin.Context) {
 
-		// Call the HTML method of the Context to render a template
 		c.HTML(
-			// Set the HTTP status to 200 (OK)
 			http.StatusOK,
-			// Use the index.html template
 			"index.html",
-			// Pass the data that the page uses (in this case, 'title')
 			gin.H{
 				"title": "Home Page",
-			},
-		)
-
+			})
 	})
 
-	server, _ := socketio.NewServer(nil)
+	server, err := apis.GraphApi()
 
-	server.OnConnect("/", func(s socketio.Conn) error {
-		s.SetContext("")
-		fmt.Println("connected:", s.ID())
-		return nil
-	})
-
-	server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
-		fmt.Println("notice:", msg)
-		s.Emit("reply", "have "+msg)
-	})
-
-	server.OnEvent("/chat", "msg", func(s socketio.Conn, msg string) string {
-		s.SetContext(msg)
-		fmt.Println("notice:", msg)
-		return "recv " + msg
-	})
-
-	server.OnEvent("/", "bye", func(s socketio.Conn) string {
-		last := s.Context().(string)
-		s.Emit("bye", last)
-		s.Close()
-		return last
-	})
-
-	server.OnError("/", func(s socketio.Conn, e error) {
-		fmt.Println("meet error:", e)
-	})
-
-	server.OnDisconnect("/", func(s socketio.Conn, reason string) {
-		fmt.Println("closed", reason)
-	})
+	if err != nil {
+		fmt.Println(err)
+		log.Println(err)
+	}
 
 	go server.Serve()
 	defer server.Close()
+
+	fmt.Println("testfgchvjb")
 
 	router.GET("/socket.io/", gin.WrapH(server))
 	router.POST("/socket.io/", gin.WrapH(server))

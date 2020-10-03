@@ -25,10 +25,8 @@
 {{ template "menu.html" . }}
 
 
-<script>
-    var socket = io();
-    socket.emit('msg', 'hello');
-</script>
+
+
 
 </body>
 <div id="container">
@@ -66,12 +64,23 @@
     Graph.svg.colors = ['#FFA', '#F00', '#0F0'];
     Graph.svg.sText = 10;
     Graph.svg.chW   =  7;
+    var socket = io();
+    var s2 = io("/graph");
 
-    init();
+
 
     var mouseButtonDn = false;
     var startOptimize = false;
     var nodeSel;
+
+    window.onload = function() {
+        socket("");
+    };
+
+
+
+
+
 
     /*******************************************************************************
      * Выбор метода
@@ -79,22 +88,53 @@
     /*******************************************************************************
      * Создать граф
      */
+
+    function socket(dt) {
+        st =  dt;
+
+
+
+
+        s2.emit('data', st, function(data){
+
+            obj = JSON.parse(data);
+
+            for (var j = 0; j < obj.length; j++){
+
+                graph.nodes.push({nm:obj[j].nm, go:[], x:obj[j].x, y:obj[j].y});
+            }
+
+            document.getElementById('txt_nodes').value = data;
+
+            show();
+
+           // alert('ok');
+
+
+        });
+
+       // socket.emit('notice', 'gvcjhbsdcjkn');
+    }
+
     function create()
     {
         var params = JSON.parse({ "d":10 });
         graph = new Graph();
         gridW = gridH = params.d;
         show();
+
     }
     /*******************************************************************************
      * when mouse down
      */
-    // function init()
-    // {
-    //     //graph.plotCanvas('canvas');
-    //
-    //     show();
-    // }
+    function init()
+    {
+        graph.plotCanvas('canvas');
+       // alert("dwcedce");
+        socket("")
+
+
+    }
     /*******************************************************************************
      *  Нарисовать реадктор
      */
@@ -111,7 +151,7 @@
             draw.line(0, j*gridH, draw.w, j*gridH);
 
         graph.plotCanvas('canvas');
-        document.getElementById('txt_nodes').value = graph.getJSON();
+       // document.getElementById('txt_nodes').value = graph.getJSON();
     }
     /*******************************************************************************
      *  show info about graph
@@ -148,6 +188,23 @@
             else if(input.isDown('a') && n !== nodeSel1 && nodeSel1 >= 0 ){      // создаём ребро
                 graph.addRib(nodeSel1, n);
                 graph.addRib(n, nodeSel1);
+
+                s2.emit('data', JSON.stringify(graph.nodes), function(data){
+
+                    obj = JSON.parse(data);
+                    //graph.nodes.clear();
+                    graph.nodes.length = 0
+
+                    for (var j = 0; j < obj.length; j++){
+
+                        graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y});
+                    }
+
+                    document.getElementById('txt_nodes').value = data;
+
+                    // alert('ok send data');
+                });
+
             }
             else if(input.isDown('c') && n !== nodeSel1 && nodeSel1 >= 0 ){      // создаём ребро
                 graph.delRib(nodeSel1, n);
@@ -176,6 +233,45 @@
                 p.x = Math.round(p.x/gridW)*gridW;       // добавляем узел
                 p.y = Math.round(p.y/gridH)*gridH;
                 graph.nodes.push({nm:graph.nodes.length, go:[], x:p.x, y:p.y});
+               // socket(JSON.stringify(graph.nodes))
+
+                socket.on('event:name', function(data){
+                    //alert(data);
+                    //document.getElementById('txt_nodes').value = graph.getJSON();
+                    obj = JSON.parse(data);
+
+                    //graph.nodes.clear();
+                    graph.nodes.length = 0
+
+                    for (var j = 0; j < obj.length; j++){
+
+                        graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y});
+                    }
+
+                    document.getElementById('txt_nodes').value = data;
+
+                    show();
+                });
+
+                s2.emit('data', JSON.stringify(graph.nodes), function(data){
+
+                    obj = JSON.parse(data);
+                    //graph.nodes.clear();
+                    graph.nodes.length = 0
+
+                    for (var j = 0; j < obj.length; j++){
+
+                        graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y});
+                    }
+
+                    document.getElementById('txt_nodes').value = data;
+
+
+                   // alert('ok send data');
+
+
+                });
+
             }
         }
 
@@ -194,6 +290,24 @@
         if(mouseButtonDn && nodeSel2 >= 0){                                     // двигаем узел
             graph.nodes[nodeSel2].x = Math.round(p.x/gridW)*gridW;
             graph.nodes[nodeSel2].y = Math.round(p.y/gridH)*gridH;
+
+
+            s2.emit('data', JSON.stringify(graph.nodes), function(data){
+
+                obj = JSON.parse(data);
+                //graph.nodes.clear();
+                graph.nodes.length = 0
+
+                for (var j = 0; j < obj.length; j++){
+
+                    graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y});
+                }
+
+                document.getElementById('txt_nodes').value = data;
+
+            });
+
+
         }
         else{
 
@@ -305,6 +419,7 @@
     //     startOptimize = !startOptimize;
     //     obj.innerHTML = startOptimize?  "Stop": "Optimize";
     // }
+
 </script>
 
 
