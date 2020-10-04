@@ -27,18 +27,18 @@ func GraphApi() (*socketio.Server, error) {
 
 		fmt.Println(data)
 
-		if data == "" {
-			fmt.Println("data nil ok", data)
-			response, _ := service.Save(nil)
-
-			d, _ := json.Marshal(response)
-
-			fmt.Println("API", string(d))
-
-			server.BroadcastToRoom("", "gr", "event:name", string(d))
-
-			return string(d)
-		}
+		//if data == "" {
+		//	fmt.Println("data nil ok", data)
+		//	response, short,  _ := service.Save(nil)
+		//
+		//	d, _ := json.Marshal(response)
+		//
+		//	fmt.Println("API", string(d))
+		//
+		//	server.BroadcastToRoom("", "gr", "event:name", string(d))
+		//
+		//	return string(d)
+		//}
 
 		var graphs []models.Graph
 		err := json.Unmarshal([]byte(data), &graphs)
@@ -47,12 +47,14 @@ func GraphApi() (*socketio.Server, error) {
 			fmt.Println(err)
 		}
 
-		response, err := service.Save(graphs)
+		response, short, err := service.Save(graphs)
 
 		d, err := json.Marshal(response)
+		sh, _ := json.Marshal(short)
 		fmt.Println("API", string(d))
 
-		server.BroadcastToRoom("", "gr", "event:name", string(d))
+		server.BroadcastToRoom("", "gr", "event:graphs", string(d))
+		server.BroadcastToRoom("", "gr", "event:short", string(sh))
 
 		return string(d)
 	})

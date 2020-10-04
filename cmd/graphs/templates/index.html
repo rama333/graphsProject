@@ -8,11 +8,11 @@
     <script async src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
         <!-- меню -->
-    <script type="application/javascript" src="../assets/js/input.js"></script>         <!-- обработка клавиатуры -->
+    <script type="application/javascript" src="assets/js/input.js"></script>         <!-- обработка клавиатуры -->
 
-    <script type="application/javascript" src="../assets/js/draw.js"></script>         <!-- функции рисования  -->     <!-- математические функции -->
+    <script type="application/javascript" src="assets/js/draw.js"></script>         <!-- функции рисования  -->     <!-- математические функции -->
 
-    <script type="application/javascript" src="../assets/js/graph.js"></script>
+    <script type="application/javascript" src="assets/js/graph.js"></script>
 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
@@ -200,7 +200,7 @@
                         graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y});
                     }
 
-                    document.getElementById('txt_nodes').value = data;
+                   // document.getElementById('txt_nodes').value = data;
 
                     // alert('ok send data');
                 });
@@ -213,6 +213,21 @@
             else if(input.isDown('d') && (n === nodeSel1 || n === nodeSel2) ){                       // удаляем узел
                 graph.delNode(n);
                 nodeSel1 = nodeSel2 = -1;
+
+                s2.emit('data', JSON.stringify(graph.nodes), function(data){
+
+                    obj = JSON.parse(data);
+                    //graph.nodes.clear();
+                    graph.nodes.length = 0
+
+                    for (var j = 0; j < obj.length; j++){
+
+                        graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y});
+                    }
+
+                   // document.getElementById('txt_nodes').value = data;
+
+                });
             }
             else{
                 if(nodeSel1 >= 0 && n !== nodeSel1 )     // была пометка
@@ -235,7 +250,7 @@
                 graph.nodes.push({nm:graph.nodes.length, go:[], x:p.x, y:p.y});
                // socket(JSON.stringify(graph.nodes))
 
-                socket.on('event:name', function(data){
+                socket.on('event:graphs', function(data){
                     //alert(data);
                     //document.getElementById('txt_nodes').value = graph.getJSON();
                     obj = JSON.parse(data);
@@ -248,10 +263,33 @@
                         graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y});
                     }
 
-                    document.getElementById('txt_nodes').value = data;
+                    //document.getElementById('txt_nodes').value = data;
 
                     show();
                 });
+
+
+                socket.on('event:short', function(data){
+                    //alert(data);
+                    //document.getElementById('txt_nodes').value = graph.getJSON();
+                    obj = JSON.parse(data);
+
+                    // //graph.nodes.clear();
+                    // graph.nodes.length = 0
+                    //
+                    // for (var j = 0; j < obj.length; j++){
+                    //
+                    //     graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y});
+                    // }
+
+                    alert(obj);
+
+
+                    //document.getElementById('txt_nodes').value = obj;
+
+                    //show();
+                });
+
 
                 s2.emit('data', JSON.stringify(graph.nodes), function(data){
 
@@ -264,7 +302,7 @@
                         graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y});
                     }
 
-                    document.getElementById('txt_nodes').value = data;
+                    //document.getElementById('txt_nodes').value = data;
 
 
                    // alert('ok send data');
@@ -303,7 +341,7 @@
                     graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y});
                 }
 
-                document.getElementById('txt_nodes').value = data;
+                //document.getElementById('txt_nodes').value = data;
 
             });
 

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gomodule/redigo/redis"
+	"graphsProject/cmd/graphs/config"
 	"graphsProject/cmd/graphs/models"
 	"log"
 )
@@ -17,8 +18,9 @@ func NewGraphDAO() *graphDAO {
 
 func (g *graphDAO) Save(graps []models.Graph) ([]models.Graph, error) {
 
-	conn, err := redis.Dial("tcp", "redis:6379")
+	conn, err := redis.Dial("tcp", config.Config.RedisHost)
 	if err != nil {
+		log.Println("redis")
 		log.Fatal(err)
 	}
 

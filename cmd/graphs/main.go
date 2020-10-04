@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"graphsProject/cmd/graphs/apis"
+	"graphsProject/cmd/graphs/config"
 	"log"
 	"net/http"
 )
@@ -11,8 +12,13 @@ import (
 var router *gin.Engine
 
 func main() {
+
+	if err := config.LoadConfig("./config"); err != nil {
+		panic(fmt.Errorf("invalid application configuration: %s", err))
+	}
+
 	router := gin.Default()
-	router.LoadHTMLGlob("templates/*")
+	router.LoadHTMLGlob("./templates/*")
 	router.Static("/assets", "./assets")
 
 	router.GET("/", func(c *gin.Context) {
