@@ -284,16 +284,14 @@
 
         show();
     }
-    /*******************************************************************************
-     * when mouse move
-     */
+
     function mouseMv(event)
     {
         var p = getPos(event);
         var n = graph.getNode(p.x, p.y, nodeR);
 
 
-        if(mouseButtonDn && nodeSel2 >= 0){                                     // двигаем узел
+        if(mouseButtonDn && nodeSel2 >= 0){
             graph.nodes[nodeSel2].x = Math.round(p.x/gridW)*gridW;
             graph.nodes[nodeSel2].y = Math.round(p.y/gridH)*gridH;
 
@@ -317,7 +315,7 @@
         }
         else{
 
-            if(n >= 0 && n !== nodeSel1){                                          // делаем пометку
+            if(n >= 0 && n !== nodeSel1){
                 graph.nodes[n].chk = 2;
                 nodeSel2 = n;
             }
