@@ -54,6 +54,7 @@ func GraphApi() (*socketio.Server, error) {
 		fmt.Println("API", string(d))
 
 		server.BroadcastToRoom("", "gr", "event:graphs", string(d))
+
 		server.BroadcastToRoom("", "gr", "event:short", string(sh))
 
 		return string(d)

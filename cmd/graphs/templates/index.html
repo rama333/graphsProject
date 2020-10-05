@@ -78,17 +78,6 @@
     };
 
 
-
-
-
-
-    /*******************************************************************************
-     * Выбор метода
-     */
-    /*******************************************************************************
-     * Создать граф
-     */
-
     function socket(dt) {
         st =  dt;
 
@@ -124,9 +113,7 @@
         show();
 
     }
-    /*******************************************************************************
-     * when mouse down
-     */
+
     function init()
     {
         graph.plotCanvas('canvas');
@@ -135,9 +122,6 @@
 
 
     }
-    /*******************************************************************************
-     *  Нарисовать реадктор
-     */
     function show()
     {
 
@@ -153,27 +137,16 @@
         graph.plotCanvas('canvas');
        // document.getElementById('txt_nodes').value = graph.getJSON();
     }
-    /*******************************************************************************
-     *  show info about graph
-     */
-    /*******************************************************************************
-     * Получить координаты мыши
-     */
     function getPos(event)
     {
         var rct = canvas.getBoundingClientRect();
         return { x: event.clientX - rct.left,  y: event.clientY - rct.top };
     }
-    /*******************************************************************************
-     * when mouse down
-     */
+
     function mouseDn(event)
     {
         mouseButtonDn = true;
     }
-    /*******************************************************************************
-     * when mouse up
-     */
     function mouseUp(event)
     {
         mouseButtonDn = false;
@@ -197,7 +170,8 @@
 
                     for (var j = 0; j < obj.length; j++){
 
-                        graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y});
+                        graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y, edgestart:obj[j].edge_start, edgestop:obj[j].edge_stop});
+
                     }
 
                    // document.getElementById('txt_nodes').value = data;
@@ -222,7 +196,8 @@
 
                     for (var j = 0; j < obj.length; j++){
 
-                        graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y});
+                        graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y, edgestart:obj[j].edge_start, edgestop:obj[j].edge_stop});
+
                     }
 
                    // document.getElementById('txt_nodes').value = data;
@@ -247,7 +222,7 @@
             if(nodeSel2 < 0){
                 p.x = Math.round(p.x/gridW)*gridW;       // добавляем узел
                 p.y = Math.round(p.y/gridH)*gridH;
-                graph.nodes.push({nm:graph.nodes.length, go:[], x:p.x, y:p.y});
+                graph.nodes.push({nm:graph.nodes.length, go:[], x:p.x, y:p.y, edge:[]});
                // socket(JSON.stringify(graph.nodes))
 
                 socket.on('event:graphs', function(data){
@@ -260,7 +235,8 @@
 
                     for (var j = 0; j < obj.length; j++){
 
-                        graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y});
+                        graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y, edgestart:obj[j].edge_start, edgestop:obj[j].edge_stop});
+
                     }
 
                     //document.getElementById('txt_nodes').value = data;
@@ -282,10 +258,10 @@
                     //     graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y});
                     // }
 
-                    alert(obj);
+                    //alert(data);
 
 
-                    //document.getElementById('txt_nodes').value = obj;
+                    document.getElementById('txt_nodes').value = data;
 
                     //show();
                 });
@@ -299,7 +275,8 @@
 
                     for (var j = 0; j < obj.length; j++){
 
-                        graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y});
+                        graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y, edgestart:obj[j].edge_start, edgestop:obj[j].edge_stop});
+
                     }
 
                     //document.getElementById('txt_nodes').value = data;
@@ -338,7 +315,7 @@
 
                 for (var j = 0; j < obj.length; j++){
 
-                    graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y});
+                    graph.nodes.push({nm:obj[j].nm, go:obj[j].go, x:obj[j].x, y:obj[j].y, edgestart:obj[j].edge_start, edgestop:obj[j].edge_stop});
                 }
 
                 //document.getElementById('txt_nodes').value = data;
@@ -369,94 +346,6 @@
 
         show();
     }
-    /*******************************************************************************
-     *
-     */
-    // function timer()
-    // {
-    //     if(!startOptimize)
-    //         return;
-    //
-    //     graph.setGraphPos(canvas, nodeR);
-    //     var v = graph.value();
-    //
-    //     if(v > valueBest){       // restore the best
-    //         graph.clone(graphBest);
-    //     }
-    //     if(v <= valueBest){       // save the best
-    //         valueBest=v;
-    //         graphBest.clone(graph);
-    //     }
-    //
-    //     graph.plotCanvas('canvas');
-    //     showInfo();
-    // }
-    /*******************************************************************************
-     */
-    // function selectGraph(val)
-    // {
-    //     // var txt_nodes = document.getElementById('txt_nodes');
-    //     // init(val);
-    // }
-    /*******************************************************************************
-     */
-    // function getJSON()
-    // {
-    //     // var txt_nodes = document.getElementById('txt_nodes');
-    //     // txt_nodes.value = graph.getJSON();
-    //     //txt_nodes.value += "\n\n" + JSON.stringify(graph.nodes);
-    // }
-    /*******************************************************************************
-     */
-    // function getSVG()
-    // {
-    //     var txt_svg = document.getElementById('txt_svg');
-    //     txt_svg.value  =  graph.getSVG();
-    // }
-    /*******************************************************************************
-     */
-    // function set(obj)
-    // {
-    //     // var st = document.getElementById('txt_nodes').value;
-    //     // //st = st.replace(/\n/g,"");
-    //     // graph.nodes = JSON.parse(st);
-    //     //
-    //     //
-    //     // show();
-    // }
-    /*******************************************************************************
-     */
-    // function press(obj)
-    // {
-    //     // var minX=Infinity, minY=Infinity;
-    //     // for(var i=graph.nodes.length; i--; ){
-    //     //     var n = graph.nodes[i];
-    //     //     if(n.x < minX)
-    //     //         minX = n.x;
-    //     //     if(n.y < minY)
-    //     //         minY = n.y;
-    //     //     if(n.chk !== undefined)
-    //     //         delete n.chk;
-    //     // }
-    //     // for(var i=graph.nodes.length; i--; ){
-    //     //     var n = graph.nodes[i];
-    //     //     n.x = n.x - minX + nodeR;
-    //     //     n.y = n.y - minY + nodeR;
-    //     // }
-    //     //
-    //     // var st = graph.getJSON("true")
-    //     // if(document.getElementById('press_cr_id').checked)
-    //     //     st = st.replace(/\n/g, "");
-    //     // document.getElementById('txt_nodes').value = st;
-    //     // alert('hi');
-    // }
-    /*******************************************************************************
-     */
-    // function optimize(obj)
-    // {
-    //     startOptimize = !startOptimize;
-    //     obj.innerHTML = startOptimize?  "Stop": "Optimize";
-    // }
 
 </script>
 

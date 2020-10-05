@@ -1,20 +1,5 @@
 ﻿'use strict';
-/****************************************************************************************
-                                        Работа с графами
-                                      Описание: Graph.html
 
-Граф - является массивом узлов, каждый из которых содержит массив go номеров узлов 
-в которые можно непосредственно перейти из данного.
-В отличие от списков и деревьев, графы имеют сложную топологию, 
-поэтому для их визуализации необходимо задать координаты x и y узлов.
-Узел может также содержать поле его имени nm.
- [
-   { nm: "0", go: [1,2]  },  
-   { nm: "1", go: [0]    },
-   { nm: "2", go: [1]    },
- ];
-                                             (с) 2016-Dec steps synset.com absolutist.com
-****************************************************************************************/
 function Graph(g)
 {
    this.nodes  = [];            // список узлов
@@ -25,9 +10,7 @@ function Graph(g)
    if(g)                        // задаём граф по массиву или другому графу
       this.clone(g);
 }
-/****************************************************************************************
-* Задать граф по другому графу или массиву узлов graph
-*/
+
 Graph.prototype.clone = function (graph)
 {
    let g = Array.isArray(graph)? graph: graph.nodes; // на массив узлов
@@ -45,9 +28,7 @@ Graph.prototype.clone = function (graph)
       }
    }
 }
-/****************************************************************************************
-* Создать граф несвязных nNodes вершин, расположенных по окружности радиуса r
-*/
+
 Graph.prototype.create = function(nNodes, r)
 {
    this.nodes = new Array(nNodes);
@@ -59,17 +40,13 @@ Graph.prototype.create = function(nNodes, r)
                         y:r-r*Math.sin(da*i + Math.PI/2)
                       };
 }
-/****************************************************************************************
-* Добавить узел, вернув его номер, указав, при необходимости его массив рёбер go и имя nm
-*/
+
 Graph.prototype.addNode = function(go, nm)
 {
    this.nodes.push( {nm:nm, go:go} );
    return this.nodes.length-1;
 }
-/****************************************************************************************
-* Добавить ребро, направленное из узла под номером i в узел j
-*/
+
 Graph.prototype.addRib = function(i, j)
 {
    if(!this.isRib(i,j)){
@@ -80,18 +57,13 @@ Graph.prototype.addRib = function(i, j)
    }
    return false;
 }
-/****************************************************************************************
-* Добавить двухсторонее ребро между узлами под номерами i и j
-*/
+
 Graph.prototype.bind = function(i, j)
 {
    this.addRib(i,j);
    this.addRib(j,i);
 }
-/****************************************************************************************
-* Вставить узел в ребро между двумя узлами, добавив, его, если не было.
-* pos = 0.5 (по умолчанию) - по средине ребра.
-*/
+
 Graph.prototype.insertNode = function(i, j, pos)
 {
    if(!pos) pos = 0.5;
@@ -107,9 +79,7 @@ Graph.prototype.insertNode = function(i, j, pos)
    n.y = nj.y * pos + ni.y * (1-pos);    
    return k;
 }
-/****************************************************************************************
-* Удалить узел под номером id
-*/
+
 Graph.prototype.delNode = function(id, chngNm)
 {
    let k = 0;
@@ -134,16 +104,12 @@ Graph.prototype.delNode = function(id, chngNm)
    }
    this.nodes = nodes;
 }
-/****************************************************************************************
-* Возвращает число узлов графа
-*/
+
 Graph.prototype.numNodes = function()
 {
    return this.nodes.length;
 }
-/****************************************************************************************
-* Возвращает число рёбер графа
-*/
+
 Graph.prototype.numRibs = function()
 {
    let num=0;   
@@ -151,9 +117,7 @@ Graph.prototype.numRibs = function()
       num += (this.nodes[i].go? this.nodes[i].go.length: 0);
    return num;
 }
-/****************************************************************************************
-* Есть ли ребро из узла под номером  i в узел j
-*/
+
 Graph.prototype.isRib = function(i, j)
 {
    let go = this.nodes[i].go;
@@ -163,9 +127,7 @@ Graph.prototype.isRib = function(i, j)
             return true;
    return false;
 }
-/****************************************************************************************
-* Удалить ребро, направленное из узла под номером i в узел j
-*/
+
 Graph.prototype.delRib = function(i, j)
 {
    let go = this.nodes[i].go;
@@ -177,9 +139,7 @@ Graph.prototype.delRib = function(i, j)
          }
    return false;
 }
-/****************************************************************************************
-* Соеденить рёбрами все узлы со всеми
-*/
+
 Graph.prototype.fullConnect = function()
 {
    for(let k = 0; k < this.nodes.length; k++){
@@ -190,10 +150,7 @@ Graph.prototype.fullConnect = function()
             this.nodes[k].go[n++] = i;
    }
 }
-/****************************************************************************************
-* Удалить узлы внутри окружности радиуса r с центром в x, y, если r>0
-* и убрать узлы далее R, если R>0
-*/
+
 Graph.prototype.createHole = function(x, y, r, R)
 {
    let k = 0;
@@ -207,10 +164,7 @@ Graph.prototype.createHole = function(x, y, r, R)
    }
    this.deleteNegativeK();   
 }
-/****************************************************************************************
-* Удалить узлы внутри окружности радиуса r с центром в ячейке s, если r>0
-* и убрать узлы далее R, если R>0. Расстояние вычисляется при движении по рёбрам
-*/
+
 Graph.prototype.createHoleGo = function(s, r, R)
 {
    let k = 0;
@@ -224,9 +178,7 @@ Graph.prototype.createHoleGo = function(s, r, R)
    }
    this.deleteNegativeK();
 }
-/****************************************************************************************
-* Удалить узлы у которых свойство k меньше нулю
-*/
+
 Graph.prototype.deleteNegativeK = function()
 {
    let nodes = [];
@@ -244,10 +196,7 @@ Graph.prototype.deleteNegativeK = function()
    }
    this.nodes = nodes;
 }
-/****************************************************************************************
-* Удалить узлы внутри окружности радиуса r с центром в ячейке s, если r>0
-* и убрать узлы далее R, если R>0. Расстояние вычисляется при движении по рёбрам
-*/
+
 Graph.prototype.setDistGo = function(s)
 {
    for(let k = this.nodes.length; k--; )
@@ -268,17 +217,13 @@ Graph.prototype.setDistGo = function(s)
       }   
    }
 }
-/****************************************************************************************
-* Установить каждому узлу графа свойство par в значение val
-*/
+
 Graph.prototype.set = function(par, val)
 {
    for(let i=this.nodes.length; i--; )
        this.nodes[i][par] = val;
 }
-/****************************************************************************************
-* Создать граф в виде решётки шириной w узлов и высотой h узлов с длиной ребра len (в px)
-*/
+
 Graph.prototype.createGrid = function(w,h, len, oneway)
 {
    this.nodes = new Array(w*h);
@@ -295,9 +240,7 @@ Graph.prototype.createGrid = function(w,h, len, oneway)
       }
    }
 }
-/****************************************************************************************
-* Создать граф в виде 6-угольной решётки шириной w узлов и высотой h узлов с длиной ребра len (в px)
-*/
+
 Graph.prototype.createHex = function(w,h, len)
 {
    this.nodes = new Array(w*h);
@@ -325,9 +268,7 @@ Graph.prototype.createHex = function(w,h, len)
       sh = (sh+1)%2;
    }
 }
-/****************************************************************************************
-* Создать граф в виде треугольника Серпинского числом рекурсий num и стартовым ребром len
-*/
+
 Graph.prototype.createTriangle = function(num, len)
 {
    this.nodes = [                                 // начальный равносторонний треугольник
@@ -355,9 +296,7 @@ Graph.prototype.createTri = function(num, k0, k1, k2)
    this.createTri(num-1, k3, k1, k4);
    this.createTri(num-1, k5, k4, k2);
 }
-/****************************************************************************************
-* Создать граф в виде треугольника Серпинского числом рекурсий num и стартовым ребром len
-*/
+
 Graph.prototype.createTriangle2 = function(num, len)
 {
    this.nodes = [
@@ -389,9 +328,7 @@ Graph.prototype.createTri2 = function(num, k0, k1, k2)
    this.createTri2(num-1, k4, k1, k5);
    this.createTri2(num-1, k7, k6, k2);
 }
-/****************************************************************************************
-* Удалить c вероятностью prob от одного до ribs рёбер
-*/
+
 Graph.prototype.delRibs = function(prob, ribs)
 {
    for(let i=this.nodes.length; i--; ){
@@ -408,9 +345,7 @@ Graph.prototype.delRibs = function(prob, ribs)
       }
    }
 }
-/****************************************************************************************
-* Перевернуть c вероятностью prob от одного до ribs рёбер
-*/
+
 Graph.prototype.swapRibs = function(prob, ribs)
 {
    for(let i=this.nodes.length; i-- ; ){
@@ -427,9 +362,7 @@ Graph.prototype.swapRibs = function(prob, ribs)
       }
    }
 }
-/****************************************************************************************
-* Создать в каждом узле массивы входящих в него рёбер on: []
-*/
+
 Graph.prototype.createOn = function()
 {
    for(let i=this.nodes.length; i--; )
@@ -440,9 +373,7 @@ Graph.prototype.createOn = function()
          for(let k=this.nodes[i].go.length; k--; )
             this.nodes[this.nodes[i].go[k]].on.push(i);
 }
-/****************************************************************************************
-* Создать в каждом узле массивы длинн рёбер d: [], используя координаты узлов 
-*/
+
 Graph.prototype.createDist = function()
 {
    for(let i=this.nodes.length; i--; ){
@@ -456,9 +387,7 @@ Graph.prototype.createDist = function()
       }
    }
 }
-/****************************************************************************************
-* Сдвинуть координаты узлов на dx, dy
-*/
+
 Graph.prototype.translate = function(dx, dy)
 {
    for(let k = this.nodes.length; k--; ){
@@ -466,9 +395,7 @@ Graph.prototype.translate = function(dx, dy)
       this.nodes[k].y += dy;
    }   
 }
-/****************************************************************************************
-* Изменить масштаб для координат узлов в  sx, sy раз
-*/
+
 Graph.prototype.scale = function(sx, sy)
 {
    for(let k = this.nodes.length; k--; ){
@@ -476,13 +403,7 @@ Graph.prototype.scale = function(sx, sy)
       this.nodes[k].y *= sy;
    }   
 }
-/****************************************************************************************
-*                                        Поиск пути                                     *
-****************************************************************************************/
 
-/****************************************************************************************
-* Подготовиться к поиску пути в ширину  от узла i к узлу j
-*/
 Graph.prototype.searchPathBeg = function(i, j)
 {
    if(i===j)                  // начало и конец совпадают
@@ -505,10 +426,7 @@ Graph.prototype.searchPathBeg = function(i, j)
    
    return 0;                  // путь пока не найден
 }
-/****************************************************************************************
-* Провести одну итерацию поиска пути в ширину; 
-* возвращает -1, если пути нет, 1 - если найден, иначе (продолжает поиск) - 0
-*/
+
 Graph.prototype.searchPathRun = function()
 {
    if(!this.lstNxt.length)
@@ -538,10 +456,7 @@ Graph.prototype.searchPathRun = function()
    
    return 0;                                      // продолжаем поиск
 }
-/****************************************************************************************
-* Закончить поиск пути в ширину и вернуть
-*  массив  последовательности узлов от финального к начальному (путь).
-*/
+
 Graph.prototype.searchPathEnd = function()
 {
    let path = []; 
@@ -558,9 +473,7 @@ Graph.prototype.searchPathEnd = function()
    path.reverse();                                // переворачиваем (от src к des)
    return path;
 }
-/****************************************************************************************
-* Подготовиться к поиску направленного пути   от узла i к узлу j
-*/
+
 Graph.prototype.searchPathDirBeg = function(i, j)
 {
    let res = this.searchPathBeg(i,j);
@@ -575,9 +488,7 @@ Graph.prototype.searchPathDirBeg = function(i, j)
       
    return 0;                  // путь пока не найден   
 }
-/****************************************************************************************
-* Вычислить рассточние между узлами
-*/
+
 Graph.prototype.searchDist = function(i, j)
 {
    let a  = this.nodes[i];
@@ -586,13 +497,6 @@ Graph.prototype.searchDist = function(i, j)
 }
 
 
-/****************************************************************************************
-*                                     Функции рисования                                 *
-****************************************************************************************/
-
-/****************************************************************************************
-* Получить массив узлов в виде JSON структуры
-*/
 Graph.prototype.getJSON = function(del)
 {
    let res = "[\n";
@@ -605,9 +509,7 @@ Graph.prototype.getJSON = function(del)
    return res+"]";
 }
 
-/****************************************************************************************
-* Получить граф в svg-формате
-*/
+
 Graph.prototype.getSVG = function()
 {
    let draw = new Draw();
@@ -616,9 +518,7 @@ Graph.prototype.getSVG = function()
    draw.transformAll(-r.x1+2, -r.y1+2);
    return draw.getSVG(r.x2-r.x1+4, r.y2-r.y1+4 );   
 }
-/****************************************************************************************
-*  Нарисовать граф на канвасе id с координатами начала координат orX, orY
-*/
+
 Graph.prototype.plotCanvas = function(id, orX, orY, clear)
 {
    let draw = new Draw(id);
@@ -626,9 +526,7 @@ Graph.prototype.plotCanvas = function(id, orX, orY, clear)
      draw.clear();
    this.plot(draw, orX, orY);
 }
-/****************************************************************************************
-* Получить ограничивающий прямоугольник {x1, y1, x2, y2} для узлв
-*/
+
 Graph.prototype.getNodeRect = function(i)
 {
    let n = this.nodes[i];
@@ -642,9 +540,7 @@ Graph.prototype.getNodeRect = function(i)
    }      
    return {x1: n.x-w/2, y1:n.y-h/2, x2: n.x+w/2, y2: n.y+h/2 };
 }
-/****************************************************************************************
-* Получить ограничивающий прямоугольник {x1, y1, x2, y2}
-*/
+
 Graph.prototype.getRect = function()
 {
    let r = { x1:Infinity, y1:Infinity, x2:-Infinity, y2:-Infinity };
@@ -658,9 +554,7 @@ Graph.prototype.getRect = function()
    }
    return r;
 }
-/****************************************************************************************
-* Нарисовать граф на объекте Draw
-*/
+
 Graph.prototype.plot = function(draw, orX, orY)
 {
    let svg = Graph.svg;
@@ -697,9 +591,6 @@ Graph.svg = {
    shwBox: true,          // показывать ящик вокруг узла
    colors: [],            // массив цветов заливки узлов по номеру свойства chk узла   
 };
-/****************************************************************************************
-* Нарисовать рёбра графа на объекте Draw
-*/
 Graph.prototype.plotRibs = function(draw)
 {
    let svg = Graph.svg;
@@ -719,8 +610,19 @@ Graph.prototype.plotRibs = function(draw)
              let isBack = this.isRib(j, i);       // есть ли обратная связь
              if(j > i || !isBack )                // ребро рисуем один раз
                 draw.line(n, this.nodes[j]);
-                draw.text1("-9", n.x, n.y-30, c.x,  c.y);
-                draw.text1("5", n.x, n.y+30, c.x,  c.y);
+
+
+                let x2 = c.x, y2 = c.y;
+                let x = (n.x+x2)/2, y = (n.y+y2)/2;
+                let nx = y2-y, ny = -(x2-x);
+                let len1 = Math.sqrt(nx*nx+ny*ny);
+
+                //draw.text(n.edgestart[k], x + 0.95*nx*svg.sDist/len1, y+0.95*ny*svg.sDist/len1);
+
+                draw.text(n.edgestart[k], x + 0.75*nx*svg.sDist/len1, y+0.75*ny*svg.sDist/len1);
+
+                // draw.text1("-9", n.x, n.y-30, c.x,  c.y);
+                // draw.text1("5", n.x, n.y+30, c.x,  c.y);
                 //draw.text1("fghvjbj", (n.x+c.x)/2, ((n.y+c.y)-50)/2);
 
                 let dx = c.x-n.x, dy = c.y-n.y;
@@ -747,9 +649,7 @@ Graph.prototype.plotRibs = function(draw)
        }//  if(n.go)
    }
 }
-/****************************************************************************************
-* Нарисовать длины рёбер графа на объекте Draw
-*/
+
 Graph.prototype.plotDists = function(draw)
 {
    let svg = Graph.svg;
@@ -768,9 +668,7 @@ Graph.prototype.plotDists = function(draw)
       }    
    }   
 }
-/****************************************************************************************
-* Нарисовать узлы графа на объекте Draw
-*/
+
 Graph.prototype.plotNodes = function(draw)
 {
    let svg = Graph.svg;
@@ -816,9 +714,7 @@ Graph.prototype.plotNodes = function(draw)
       
    }// for i по узлам
 }
-/****************************************************************************************
-* Выводим пометки на объекте Draw
-*/
+
 Graph.prototype.plotLabels = function(draw)
 {
    let svg = Graph.svg;
@@ -827,14 +723,7 @@ Graph.prototype.plotLabels = function(draw)
       draw.text(lbl.nm, lbl.x, lbl.y);  
    }
 }
-/****************************************************************************************
-*                         Расположени узлов графа в пространстве                        *
-****************************************************************************************/
 
-
-/***************************************************************************************
-* Получить ближайший узел к точке (x,y), но не далее r (если он определён)
-*/
 Graph.prototype.getNode = function(x, y, r)
 {
    let nBest = -1, dBest = Infinity;
@@ -848,9 +737,7 @@ Graph.prototype.getNode = function(x, y, r)
    }
    return nBest;
 }
-/****************************************************************************************
-* Return number of crossing ribs
-*/
+
 Graph.prototype.getNumCross = function()
 {
    let ribs = [];
@@ -875,9 +762,7 @@ Graph.prototype.getNumCross = function()
    }
    return num;
 }
-/****************************************************************************************
-* Return dispersion of ribs length
-*/
+
 Graph.prototype.getSigmaRibs = function()
 {
    let ribs = [];
@@ -901,9 +786,7 @@ Graph.prototype.getSigmaRibs = function()
 
    return Math.sqrt(disp);
 }
-/****************************************************************************************
-* Return number of intersection of nides by ribs
-*/
+
 Graph.prototype.getDistNodesToRibs = function()
 {
    //let minD = Infinity;
@@ -925,23 +808,17 @@ Graph.prototype.getDistNodesToRibs = function()
    }
    return num;
 }
-/****************************************************************************************
-* Return intersection of nides
-*/
+
 Graph.prototype.getDistBetweenNodes = function()
 {
    return num;
 }
-/****************************************************************************************
-* Return value of view representation the graph
-*/
+
 Graph.prototype.value = function (canvas)
 {
    return Math.floor(1000*this.getNumCross()+this.getSigmaRibs());
 }
-/****************************************************************************************
-* Set coordinates nodes of the graph for plotting on canvas.
-*/
+
 Graph.prototype.setGraphPos = function (canvas)
 {
    let pos = new Array(this.nodes.length);

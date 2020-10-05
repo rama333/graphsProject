@@ -1,22 +1,5 @@
 ﻿'use strict';
-/***************************************************************************************
-              Набор  функций по работе с векторной и растровой графикой
-              
-Одновременно может рисовать на канвасе и в svg формате.
-Использование:
-   let draw = new Draw();
-   draw.colorLine("#F00");                 // линия будет красной
-   draw.circle(50,50, 25);                 // рисуем окружность в (50,50) радиуса 25
-   draw.line(0,0,50,50);                   // рисуем линию
-   document.write(draw.getSVG(200,500));   // выводим как svg-файл в теле документа
-   
-По умолчанию работает с svg-файлом. 
-Если при инициализации задан параметр id канваса, то будет работать с канвасом. 
-При желании может работать одновременно и с канвасом и с svg-файлом.
-Ддя этого необходимо после инициальзации канваса, вызвать: draw.svg="";
 
-                                                (с) 2016-nov synset.com, absolutist.com
-***************************************************************************************/
 function Draw(canvas_id)
 {
    if(canvas_id!==undefined){
@@ -43,13 +26,7 @@ function Draw(canvas_id)
    this.sText   = 16;                             // размер шрифта 
 }
 
-/****************************************************************************************
-*                                Графические функции
-****************************************************************************************/
 
-/****************************************************************************************
-* Очистить канвас и строку svg-файла
-*/
 Draw.prototype.clear = function()
 {
    if(this.ctx)
@@ -58,9 +35,7 @@ Draw.prototype.clear = function()
    if(this.svg !== undefined)
       this.svg = "";
 }
-/****************************************************************************************
-* Получить контекст рисования ctx по canvas id и его ширину w, высоту h
-*/
+
 Draw.prototype.setCanvas = function(canvas_id)
 {
    let canvas = document.getElementById(canvas_id);
@@ -68,53 +43,40 @@ Draw.prototype.setCanvas = function(canvas_id)
    this.h   = canvas.height;
    return this.ctx = canvas.getContext('2d');
 }
-/****************************************************************************************
-* Задать цвет заливки
-*/
+
 Draw.prototype.colorFill   = function(color) 
 { 
    this.cFill = color; 
    if(this.ctx)
       this.ctx.fillStyle = color;
 }
-/****************************************************************************************
-* Задать цвет линий
-*/
+
 Draw.prototype.colorLine = function(color) 
 { 
    this.cStroke = color; 
    if(this.ctx)
       this.ctx.strokeStyle = color;   
 }
-/****************************************************************************************
-* Задать цвет текста
-*/
+
 Draw.prototype.colorText   = function(color) 
 { 
    this.cText = color; 
 }
-/****************************************************************************************
-* Задать толщину линий
-*/
+
 Draw.prototype.widthLine = function(width) 
 { 
    this.wStroke = width; 
    if(this.ctx)
       this.ctx.lineWidth = width;   
 }
-/****************************************************************************************
-* Задать размер текста
-*/
+
 Draw.prototype.sizeText   = function(size) 
 { 
    this.sText = size; 
    if(this.ctx)
       this.ctx.font  = size+"px monospace";          
 }
-/****************************************************************************************
-* Нарисовать линию от точки p1:{x,y} к точке p2:{x,y}
-* Можно вызывать так: line( {x,y}, {x,y} )
-*/
+
 Draw.prototype.line = function(x1, y1, x2, y2)
 {
    let p1 = (x2!==undefined? {x:x1, y:y1}: x1 );
@@ -133,10 +95,7 @@ Draw.prototype.line = function(x1, y1, x2, y2)
       +'stroke="'+this.cStroke+'" stroke-width="'+this.wStroke+'"/>\n';       
    }
 }
-/****************************************************************************************
-* Подготовка скругленного прямоугольник для канваса (встроенного нет)
-* Используется в rect (x,y - левый верхний угол, w-ширина, h-высота) 
-*/
+
 Draw.prototype.roundRect = function(x, y, w, h, r)
 {
    this.ctx.beginPath();
@@ -150,10 +109,7 @@ Draw.prototype.roundRect = function(x, y, w, h, r)
    this.ctx.lineTo(x, y+r);
    this.ctx.quadraticCurveTo(x, y, x+r, y);
 }
-/****************************************************************************************
-* Нарисовать прозрачный прямоугольник с радиусом скругления углов r и центром в точке x,y
-* Можно вызывать так: rect( {x,y,w,h,r} )
-*/
+
 Draw.prototype.rect = function(x,y,w,h,r)
 {
    let rct;
@@ -178,10 +134,7 @@ Draw.prototype.rect = function(x,y,w,h,r)
       +'stroke="'+this.cStroke+'" stroke-width="'+this.wStroke+'" fill="none" />\n'
    }
 }
-/****************************************************************************************
-* Нарисовать залитый прямоугольник с радиусом скругления углов r и центром в точке x,y.
-* Можно вызывать так: box( {x,y,w,h,r} ) или так box( {x,y,w,h}, r )
-*/
+
 Draw.prototype.box = function(x,y,w,h,r)
 {
    let rct;
@@ -207,10 +160,7 @@ Draw.prototype.box = function(x,y,w,h,r)
       +'stroke="'+this.cStroke+'" stroke-width="'+this.wStroke+'" fill="'+this.cFill+'" />\n'
    }      
 }
-/****************************************************************************************
-* Нарисовать окружность с радиусом r и центром в точке x,y.
-* Можно вызывать так: circle( {x,y,r} ) или так circle( {x,y} , r )
-*/
+
 Draw.prototype.circle = function(x,y, r)
 {
    let p;
@@ -229,10 +179,7 @@ Draw.prototype.circle = function(x,y, r)
       +'" stroke="'+this.cStroke+'" fill="none"/>\n';
    }
 }
-/****************************************************************************************
-* Нарисовать окружность с радиусом r и центром в точке x,y.
-* Можно вызывать так: circle( {x,y,r} ) или так circle( {x,y} , r )
-*/
+
 Draw.prototype.circleFill = function(x,y, r)
 {
    let p;
@@ -255,10 +202,7 @@ Draw.prototype.circleFill = function(x,y, r)
       +'" stroke="'+this.cStroke+'" fill="'+this.cFill+'"/>\n';
    }
 }
-/****************************************************************************************
-* Нарисовать "толстую" точку радиуса r с центром в точке p:{x,y} (fill circle)
-* Можно вызывать так: point( {x,y,r} )
-*/
+
 Draw.prototype.point = function(x,y, r)
 {
    let p;
@@ -278,9 +222,7 @@ Draw.prototype.point = function(x,y, r)
       +'" stroke="'+this.cFill+'" fill="'+this.cFill+'"/>\n';
    }
 }
-/****************************************************************************************
-* Нарисовать дугу из центра p радиуса r от угла a1 до угла a2 против часовой стрелке
-*/
+
 Draw.prototype.arc = function(p, r, a1, a2)
 {
    if(this.ctx){
@@ -289,10 +231,7 @@ Draw.prototype.arc = function(p, r, a1, a2)
       this.ctx.stroke();
    }
 }
-/****************************************************************************************
-* Нарисовать текст txt в точке x,y. Будет центрироваться вокруг этой точки
-* Можно вызывать так: point( txt, {x,y} )
-*/
+
 Draw.prototype.text = function(txt, x,y)
 {
    let p = (y!==undefined? {x:x,y:y}: x);
@@ -343,10 +282,7 @@ Draw.prototype.text1 = function(txt, x,y, x1, y1)
           + txt + '</text>\n';
    }
 }
-/****************************************************************************************
-* Нарисовать окружности из массива crcls, сначала контуром цвета strokeStyle,
-* а затем залить цветом fillStyle (получится кластер с обведенным контуром)
-*/
+
 Draw.prototype.circles = function(crcls)
 {
    if(this.ctx){
@@ -378,11 +314,7 @@ Draw.prototype.circles = function(crcls)
       }
    }
 }
-/****************************************************************************************
-* Нарисовать замкнутый полигон по точкам в массиве pnts =[ {x,y}, ...]
-* Если fill=true - полигон залит цветом cFill
-* Если определён массив номеров way, то точки из pnts беруться в последовательности way
-*/
+
 Draw.prototype.polygon = function(pnts,  fill, way)
 {
    if(this.ctx){
@@ -420,10 +352,7 @@ Draw.prototype.polygon = function(pnts,  fill, way)
       +' stroke="'+this.cStroke+'" stroke-width="'+this.wStroke+'" />\n';
    }
 }
-/****************************************************************************************
-* Начать на канвасе или svg-файле трансформацию сдвига dx, dy,
-* вращения на угол alpha и скейла sx, sy  (скейла и вращения может не быть)
-*/
+
 Draw.prototype.transformBeg = function(dx, dy, alpha, sx, sy)
 {
    if(this.ctx !== undefined){
@@ -440,9 +369,7 @@ Draw.prototype.transformBeg = function(dx, dy, alpha, sx, sy)
                + (sy!==undefined? ' scale('+this.round(sx)+' '+this.round(sy)+')' :"")
                + '">\n'
 }
-/****************************************************************************************
-* Закончить на канвасе или svg-файле трансформацию transformBeg
-*/
+
 Draw.prototype.transformEnd = function(dx, dy, alpha, sx, sy)
 {
    if(this.ctx !== undefined)
@@ -450,10 +377,7 @@ Draw.prototype.transformEnd = function(dx, dy, alpha, sx, sy)
    if(this.svg !== undefined)
       this.svg += '</g>\n';
 }
-/****************************************************************************************
-* Применить ко всему, сформированному до сих пор svg-файлу сдвиг dx, dy,
-* вращение на угол alpha и скейл sx, sy  (скейла и вращения может не быть)
-*/
+
 Draw.prototype.transformAll = function(dx, dy, alpha, sx, sy)
 {
    this.svg = '<g transform="translate('+this.round(dx)+' '+this.round(dy)+')'
@@ -463,16 +387,12 @@ Draw.prototype.transformAll = function(dx, dy, alpha, sx, sy)
             + this.svg
             + '</g>\n';
 }
-/****************************************************************************************
-* Округлить вещественное число val
-*/
+
 Draw.prototype.round = function(val)
 {
    return Math.round(val*100)/100;
 }
-/****************************************************************************************
-* Вывести картинку в прямоугольник w,h
-*/
+
 Draw.prototype.getSVG = function(w,h)
 {
    let rct = (h!==undefined? {w:w, h:h}: w);

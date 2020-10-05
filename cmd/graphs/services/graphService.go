@@ -3,6 +3,8 @@ package services
 import (
 	"fmt"
 	"graphsProject/cmd/graphs/models"
+	"math/rand"
+	"time"
 )
 
 type serviceDAO interface {
@@ -20,12 +22,33 @@ func NewServiceDAO(dao serviceDAO) *service {
 
 func (s service) Save(g []models.Graph) ([]models.Graph, []int, error) {
 
+	rand.Seed(time.Now().UnixNano())
 	graph, err := s.dao.Save(g)
 
 	if err != nil {
 		return nil, nil, err
 	}
+
+	for i, obj := range graph {
+		if len(obj.Way) > 0 {
+			for _, _ = range obj.Way {
+				graph[i].EdgeStart = append(graph[i].EdgeStart, rand.Intn(30))
+				rand.Seed(time.Now().UnixNano())
+				graph[i].EdgeEnd = append(graph[i].EdgeEnd, rand.Intn(30))
+			}
+		} else {
+			fmt.Println(rand.Intn(30))
+			graph[i].EdgeStart = append(graph[i].EdgeStart, 0)
+		}
+	}
+
+	graph[0].EdgeStart[0] = -5
+
 	short := shortСut(graph)
+
+	//fmt.Println("short", short)
+
+	fmt.Println("graph", graph)
 
 	return graph, short, nil
 }
@@ -34,14 +57,24 @@ func shortСut(g []models.Graph) []int {
 
 	inf := 1 << 31
 	v := 0
-	t := 3
+
+	m := 0
+	n := 0
 
 	graphs := []models.GraphEdge{}
+	//graphsInEdge := []models.Graph{}
 
 	for _, obj := range g {
-		for _, b := range obj.Way {
-			graphs = append(graphs, models.GraphEdge{A: obj.Nm, B: b, Edge: 7})
-			graphs = append(graphs, models.GraphEdge{A: b, B: obj.Nm, Edge: 7})
+		n++
+		if len(obj.Way) > 0 {
+			for i, b := range obj.Way {
+				graphs = append(graphs, models.GraphEdge{A: obj.Nm, B: b, Edge: obj.EdgeStart[i]})
+				m++
+				//graphs = append(graphs, models.GraphEdge{A: b, B: obj.Nm, Edge: obj.EdgeEnd[i]})
+			}
+		} else {
+			//graphs = append(graphs, models.GraphEdge{A: obj.Nm, B: obj.Nm, Edge: obj.EdgeStart[0]})
+			//m++
 		}
 	}
 
@@ -63,13 +96,15 @@ func shortСut(g []models.Graph) []int {
 
 	d := []int{}
 	p := []int{}
-	m := len(graphs)
-	n := len(graphs)
 
-	for i := 0; i < n-1; i++ {
+	t := n - 1
+
+	for i := 0; i < n; i++ {
 		d = append(d, inf)
 		p = append(p, -1)
 	}
+
+	fmt.Println("append ok")
 
 	d[v] = 0
 
@@ -87,7 +122,7 @@ func shortСut(g []models.Graph) []int {
 		}
 	}
 
-	fmt.Println(d) //return [0 7 2 6]
+	fmt.Println(d)
 	fmt.Println(p)
 
 	way := []int{}
@@ -97,7 +132,11 @@ func shortСut(g []models.Graph) []int {
 			break
 		}
 		way = append(way, p[i])
+	}
 
+	if len(way) == 0 {
+		way = append(way, 0)
+		return way
 	}
 
 	fmt.Println(way)
