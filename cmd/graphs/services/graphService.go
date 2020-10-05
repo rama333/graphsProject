@@ -46,10 +46,6 @@ func (s service) Save(g []models.Graph) ([]models.Graph, []int, error) {
 
 	short := shortСut(graph)
 
-	//fmt.Println("short", short)
-
-	fmt.Println("graph", graph)
-
 	return graph, short, nil
 }
 
@@ -62,7 +58,6 @@ func shortСut(g []models.Graph) []int {
 	n := 0
 
 	graphs := []models.GraphEdge{}
-	//graphsInEdge := []models.Graph{}
 
 	for _, obj := range g {
 		n++
@@ -89,11 +84,6 @@ func shortСut(g []models.Graph) []int {
 	fmt.Println("-------------------------------")
 	fmt.Println("-------------------------------")
 
-	//graphs = append(graphs, models.GraphEdge{A: 1, b: 2, edge: -5})
-	//graphs = append(graphs, models.GraphEdge{A: 0, b: 2, edge: 6})
-	//graphs = append(graphs, models.GraphEdge{A: 2, b: 3, edge: 4})
-	//graphs = append(graphs, models.GraphEdge{A: 3, b: 1, edge: 8})
-
 	d := []int{}
 	p := []int{}
 
@@ -104,8 +94,6 @@ func shortСut(g []models.Graph) []int {
 		p = append(p, -1)
 	}
 
-	fmt.Println("append ok")
-
 	d[v] = 0
 
 	for i := 0; i < n-1; i++ {
@@ -113,7 +101,6 @@ func shortСut(g []models.Graph) []int {
 			if d[graphs[j].A] < inf {
 
 				if d[graphs[j].B] > d[graphs[j].A]+graphs[j].Edge {
-
 					d[graphs[j].B] = min(d[graphs[j].B], d[graphs[j].A]+graphs[j].Edge)
 					p[graphs[j].B] = graphs[j].A
 					//fmt.Println(i, j, d[graphs[j].b], d[graphs[j].a]+graphs[j].edge)
