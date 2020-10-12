@@ -41,8 +41,6 @@ func main() {
 	go server.Serve()
 	defer server.Close()
 
-	fmt.Println("testfgchvjb")
-
 	router.GET("/socket.io/", gin.WrapH(server))
 	router.POST("/socket.io/", gin.WrapH(server))
 
